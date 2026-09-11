@@ -1,0 +1,11 @@
+Terminal 1 — Backend
+
+cd "E:\MLSA pro\Angular_To_Do_List\todo-backend"
+.\venv\Scripts\Activate.ps1
+uvicorn main:app --reload
+
+
+Terminal 2 — Frontend
+
+cd "E:\MLSA pro\Angular_To_Do_List\todo-frontend"
+ng serve

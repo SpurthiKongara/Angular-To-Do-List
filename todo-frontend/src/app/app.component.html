@@ -1,0 +1,471 @@
+<div class="page">
+  <!-- ================= HEADER ================= -->
+  <header class="hero">
+    <div class="hero-content">
+      <div class="hero-icon">✓</div>
+
+      <div>
+        <h1>My Todo List</h1>
+        <p>Organize your tasks. Be more productive!</p>
+      </div>
+    </div>
+
+    <div class="hero-message">
+      "Small steps every day<br />
+      lead to big results." ✨
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- ================= ADD TASK ================= -->
+    <section class="add-card">
+      <h2>➕ Add New Task</h2>
+
+      <div class="form-grid">
+        <!-- Task -->
+        <div class="form-field task-field">
+          <label>Task Name</label>
+
+          <input
+            type="text"
+            [(ngModel)]="newTodo"
+            placeholder="Enter a new task..."
+            (keyup.enter)="editingTodoId === null ? addTodo() : updateTodo()"
+          />
+        </div>
+
+        <!-- Due Date -->
+        <div class="form-field">
+          <label>Due Date</label>
+
+          <input type="date" [(ngModel)]="dueDate" />
+        </div>
+
+        <!-- Category -->
+        <div class="form-field">
+          <label>Category</label>
+
+          <select [(ngModel)]="selectedCategory">
+            @for (category of categories; track category) {
+
+            <option [value]="category">
+              {{ category }}
+            </option>
+
+            }
+          </select>
+        </div>
+
+        <!-- Tags -->
+        <div class="form-field">
+          <label>Tags</label>
+
+          <input
+            type="text"
+            [(ngModel)]="newTags"
+            placeholder="Enter tags (comma separated)"
+          />
+        </div>
+
+        <!-- Add / Update -->
+        <div class="form-button">
+          @if (editingTodoId === null) {
+
+          <button class="add-task-btn" (click)="addTodo()">✈️ Add Task</button>
+
+          } @else {
+
+          <button class="add-task-btn" (click)="updateTodo()">
+            ✓ Update Task
+          </button>
+
+          <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
+
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FILTER / SEARCH / SORT ================= -->
+    <section class="controls-card">
+      <!-- All -->
+      <div class="filter-buttons">
+        <button
+          [class.active]="selectedFilter === 'All'"
+          (click)="selectedFilter = 'All'"
+        >
+          🏷️ All
+        </button>
+
+        <!-- Completed -->
+        <button
+          [class.active]="selectedFilter === 'Completed'"
+          (click)="selectedFilter = 'Completed'"
+        >
+          ✓ Completed
+        </button>
+
+        <!-- Pending -->
+        <button
+          [class.active]="selectedFilter === 'Pending'"
+          (click)="selectedFilter = 'Pending'"
+        >
+          ⏳ Pending
+        </button>
+      </div>
+
+      <!-- Search -->
+      <div class="search-box">
+        <span>🔍</span>
+
+        <input
+          type="text"
+          [(ngModel)]="searchText"
+          placeholder="Search tasks..."
+        />
+      </div>
+
+      <!-- Sort -->
+      <div class="sort-box">
+        <label>Sort By:</label>
+
+        <select [(ngModel)]="selectedSort">
+          <option value="Newest">⇅ Newest First</option>
+
+          <option value="Oldest">⇅ Oldest First</option>
+
+          <option value="A-Z">A-Z</option>
+
+          <option value="Z-A">Z-A</option>
+
+          <option value="Due Date">📅 Due Date</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- ================= TAG FILTER ================= -->
+    <section class="tag-filter-section">
+      <div class="filter-label">🏷️ Filter by Tags:</div>
+
+      <div class="tag-filter-buttons">
+        <button
+          [class.active]="selectedTag === 'All'"
+          (click)="selectedTag = 'All'"
+        >
+          All
+        </button>
+
+        <button
+          [class.active]="selectedTag === 'Study'"
+          (click)="selectedTag = 'Study'"
+        >
+          Study
+        </button>
+
+        <button
+          [class.active]="selectedTag === 'Work'"
+          (click)="selectedTag = 'Work'"
+        >
+          Work
+        </button>
+
+        <button
+          [class.active]="selectedTag === 'Personal'"
+          (click)="selectedTag = 'Personal'"
+        >
+          Personal
+        </button>
+
+        <button
+          [class.active]="selectedTag === 'Health'"
+          (click)="selectedTag = 'Health'"
+        >
+          Health
+        </button>
+
+        <button
+          [class.active]="selectedTag === 'Hobby'"
+          (click)="selectedTag = 'Hobby'"
+        >
+          Hobby
+        </button>
+
+        <button
+          [class.active]="selectedTag === 'Finance'"
+          (click)="selectedTag = 'Finance'"
+        >
+          Finance
+        </button>
+
+        <button
+          [class.active]="selectedTag === 'Travel'"
+          (click)="selectedTag = 'Travel'"
+        >
+          Travel
+        </button>
+
+        <button
+          [class.active]="selectedTag === 'Urgent'"
+          (click)="selectedTag = 'Urgent'"
+        >
+          Urgent
+        </button>
+
+        <button
+          [class.active]="selectedTag === 'Other'"
+          (click)="selectedTag = 'Other'"
+        >
+          Other
+        </button>
+      </div>
+    </section>
+
+    <!-- ================= TASK TABLE ================= -->
+    <section class="task-card">
+      <div class="table-header">
+        <h2>📋 Your Tasks</h2>
+
+        <span> {{ filteredTodos.length }} tasks </span>
+      </div>
+
+      @if (filteredTodos.length > 0) {
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+
+              <th>☑</th>
+
+              <th>Task Name</th>
+
+              <th>Category</th>
+
+              <th>📅 Due Date</th>
+
+              <th>🏷️ Tags</th>
+
+              <th>● Status</th>
+
+              <th>📅 Added On</th>
+
+              <th>⭐ Completed On</th>
+
+              <th>⚙️ Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for ( todo of filteredTodos; track todo.id; let i = $index ) {
+
+            <tr [class.completed-row]="todo.completed">
+              <!-- Number -->
+              <td class="number-cell">
+                {{ i + 1 }}
+              </td>
+
+              <!-- Checkbox -->
+              <td>
+                <input
+                  type="checkbox"
+                  [checked]="todo.completed"
+                  (change)="toggleTodo(todo)"
+                />
+              </td>
+
+              <!-- Task Name -->
+              <td class="task-name-cell">
+                <div class="task-title">
+                  <span [class.completed-text]="todo.completed">
+                    {{ todo.title }}
+                  </span>
+                </div>
+              </td>
+
+              <!-- Category -->
+              <td>
+                @if (todo.category === 'Study') {
+
+                <span class="category-badge study"> 📕 Study </span>
+
+                } @else if (todo.category === 'Work') {
+
+                <span class="category-badge work"> 💼 Work </span>
+
+                } @else if (todo.category === 'Personal') {
+
+                <span class="category-badge personal"> 🌸 Personal </span>
+
+                } @else if (todo.category === 'Health') {
+
+                <span class="category-badge health"> ❤️ Health </span>
+
+                } @else if (todo.category === 'Hobby') {
+
+                <span class="category-badge hobby"> 🎮 Hobby </span>
+
+                } @else if (todo.category === 'Finance') {
+
+                <span class="category-badge finance"> 💰 Finance </span>
+
+                } @else if (todo.category === 'Travel') {
+
+                <span class="category-badge travel"> ✈️ Travel </span>
+
+                } @else {
+
+                <span class="category-badge other"> ⚪ Other </span>
+
+                }
+              </td>
+
+              <!-- Due Date -->
+              <td>
+                @if (todo.dueDate) {
+
+                <span class="due-date" [class.overdue]="isOverdue(todo)">
+                  📅
+                  {{ todo.dueDate | date : "dd-MM-yyyy" }}
+
+                  @if (isOverdue(todo)) {
+                  <small>Overdue</small>
+                  }
+                </span>
+
+                } @else {
+
+                <span class="no-date"> — </span>
+
+                }
+              </td>
+
+              <!-- Tags -->
+              <td>
+                <div class="tags">
+                  @if (todo.tags && todo.tags.length > 0) { @for ( tag of
+                  todo.tags; track tag ) {
+
+                  <span class="tag">
+                    {{ tag }}
+                  </span>
+
+                  } } @else {
+
+                  <span class="no-tags"> — </span>
+
+                  }
+                </div>
+              </td>
+
+              <!-- Status -->
+              <td>
+                @if (todo.completed) {
+
+                <span class="status completed-status"> ✓ Completed </span>
+
+                } @else {
+
+                <span class="status pending-status"> ⏳ Pending </span>
+
+                }
+              </td>
+
+              <!-- Added On -->
+              <td class="date-cell">
+                {{ todo.createdAt | date : "dd-MM-yyyy" }}
+
+                <small>
+                  {{ todo.createdAt | date : "hh:mm a" }}
+                </small>
+              </td>
+
+              <!-- Completed On -->
+              <td class="date-cell">
+                @if (todo.completedAt) {
+
+                {{ todo.completedAt | date : "dd-MM-yyyy" }}
+
+                <small>
+                  {{ todo.completedAt | date : "hh:mm a" }}
+                </small>
+
+                } @else {
+
+                <span class="not-completed"> — </span>
+
+                }
+              </td>
+
+              <!-- Actions -->
+              <td>
+                <div class="actions">
+                  <button
+                    class="edit-btn"
+                    title="Edit Task"
+                    (click)="editTodo(todo)"
+                  >
+                    ✏️
+                  </button>
+
+                  <button
+                    class="delete-btn"
+                    title="Delete Task"
+                    (click)="deleteTodo(todo.id)"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            }
+          </tbody>
+        </table>
+      </div>
+
+      } @else {
+
+      <div class="empty-state">
+        <div class="empty-icon">📝</div>
+
+        <h3>No tasks found</h3>
+
+        <p>Add a new task or change your filters.</p>
+      </div>
+
+      }
+    </section>
+
+    <!-- ================= SUMMARY ================= -->
+    <section class="summary">
+      <div class="summary-item">
+        <strong>✓</strong>
+
+        <span> {{ totalTasks }} tasks in total </span>
+      </div>
+
+      <div class="summary-item">
+        <strong>✓</strong>
+
+        <span> {{ completedTasks }} completed </span>
+      </div>
+
+      <div class="summary-item">
+        <strong>⏳</strong>
+
+        <span> {{ pendingTasks }} pending </span>
+      </div>
+
+      <div class="summary-message">
+        <span>🚀</span>
+
+        <div>
+          <strong>Keep going!</strong>
+
+          <strong>You're doing great.</strong>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
