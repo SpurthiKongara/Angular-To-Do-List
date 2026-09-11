@@ -21,6 +21,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
     "http://localhost:4200",
+    "https://angular-todo-frontend-7c2050bhf-spurthi-s-projects.vercel.app",
     "https://angular-todo-frontend-rho.vercel.app",
 ],
     allow_credentials=True,
