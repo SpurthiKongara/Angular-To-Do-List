@@ -19,7 +19,10 @@ app = FastAPI(title="Todo API")
 # Allow Angular to communicate with FastAPI
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],
+    allow_origins=[
+    "http://localhost:4200",
+    "https://angular-todo-frontend-rho.vercel.app",
+],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
