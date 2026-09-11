@@ -17,7 +17,7 @@ export interface Todo {
   providedIn: 'root',
 })
 export class TodoService {
-  private apiUrl = 'http://127.0.0.1:8000/todos';
+  private apiUrl = 'https://angular-todo-backend-br3j.onrender.com/todos';
 
   constructor(private http: HttpClient) {}
 
