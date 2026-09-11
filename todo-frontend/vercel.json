@@ -1,0 +1,4 @@
+{
+  "buildCommand": "ng build",
+  "outputDirectory": "dist/todo-frontend"
+}
