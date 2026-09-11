@@ -20,10 +20,9 @@ app = FastAPI(title="Todo API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-    "http://localhost:4200",
-    "https://angular-todo-frontend-7c2050bhf-spurthi-s-projects.vercel.app",
-    "https://angular-todo-frontend-rho.vercel.app",
-],
+        "http://localhost:4200",
+    ],
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
